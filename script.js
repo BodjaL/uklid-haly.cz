@@ -15,3 +15,24 @@ const observer = new IntersectionObserver(entries => entries.forEach(entry => {
   if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
 }), { threshold: .12 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+const cookieBanner = document.querySelector('#cookie-banner');
+const cookieSettings = document.querySelector('[data-cookie-settings]');
+const consentKey = 'uklid-haly-cookie-consent';
+
+function openCookieBanner() {
+  if (!cookieBanner) return;
+  cookieBanner.hidden = false;
+  cookieBanner.querySelector('button')?.focus();
+}
+
+function saveCookieChoice(choice) {
+  localStorage.setItem(consentKey, JSON.stringify({ choice, savedAt: new Date().toISOString() }));
+  if (cookieBanner) cookieBanner.hidden = true;
+}
+
+if (!localStorage.getItem(consentKey)) openCookieBanner();
+document.querySelectorAll('[data-cookie-choice]').forEach(button => {
+  button.addEventListener('click', () => saveCookieChoice(button.dataset.cookieChoice));
+});
+cookieSettings?.addEventListener('click', openCookieBanner);
